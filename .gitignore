@@ -8,3 +8,5 @@ Desktop.ini
 *.log
 *.gz
 
+#dotenv
+.env
