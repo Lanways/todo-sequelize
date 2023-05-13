@@ -13,10 +13,18 @@ router.get('/register', (req, res) => {
   res.render('register')
 })
 
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/users/login'
-}))
+router.post('/login', (req, res, next) => {
+  const { email, password } = req.body
+  if (!email || !password) {
+    res.locals.warning_msg = 'Email and Password are required'
+    return res.render('login', { email })
+  }
+  next()
+},
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/users/login'
+  }))
 
 router.post('/register', (req, res) => {
   const { name, email, password, confirmPassword } = req.body
