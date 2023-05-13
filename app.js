@@ -17,7 +17,7 @@ const User = db.User
 
 app.engine('hbs', exphbs({ defaultLayout: 'main', extname: '.hbs' }))
 app.set('view engine', 'hbs')
-app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(session({
   secret: 'ThisIsMySecret',
@@ -85,6 +85,26 @@ app.get('/todos/:id', (req, res) => {
     .then(todo =>
       res.render('detail', { todo: todo.toJSON() }))
     .catch(error => console.log(error))
+})
+
+app.get('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  return Todo.findByPk(id)
+    .then(todo => res.render('edit', { todo: todo.toJSON() }))
+})
+
+app.put('/todos/:id', (req, res) => {
+  const id = req.params.id
+  const { name, isDone } = req.body
+  Todo.findByPk(id)
+    .then(todo => {
+      console.log(todo)
+      todo.name = name
+      todo.isDone = isDone === 'on'
+      return todo.save()
+    })
+    .then(() => res.redirect(`/todos/${id}`))
+    .catch(err => console.log(err))
 })
 
 app.listen(PORT, () => {
