@@ -107,6 +107,14 @@ app.put('/todos/:id', (req, res) => {
     .catch(err => console.log(err))
 })
 
+app.delete('/todos/:id', (req, res) => {
+  const id = req.params.id
+  Todo.findByPk(id)
+    .then(todo => todo.destroy())
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err))
+})
+
 app.listen(PORT, () => {
   console.log(`App is running on http://localhost:${PORT}`)
 })
