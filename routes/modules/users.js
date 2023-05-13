@@ -20,11 +20,30 @@ router.post('/login', passport.authenticate('local', {
 
 router.post('/register', (req, res) => {
   const { name, email, password, confirmPassword } = req.body
+  const errors = []
+
+  if (!name || !email || !password || !confirmPassword) {
+    errors.push({ message: 'All frome fields are required' })
+  }
+  if (password !== confirmPassword) {
+    errors.push({ message: `password and confirmPassword don't match` })
+  }
+
+  if (errors.length) {
+    return res.render('register', {
+      errors,
+      name,
+      email,
+      password,
+      confirmPassword
+    })
+  }
 
   User.findOne({ where: { email } }).then(user => {
     if (user) {
-      console.log('User already exists')
+      errors.push({ message: `User already exists` })
       return res.render('register', {
+        errors,
         name,
         email,
         password,
@@ -46,6 +65,7 @@ router.post('/register', (req, res) => {
 
 router.get('/logout', (req, res) => {
   req.logout()
+  req.flash('success_msg', '你已經成功登出。')
   res.redirect('/users/login')
 })
 
